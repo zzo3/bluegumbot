@@ -1,0 +1,20 @@
+{
+  "name": "twitch-bot",
+  "version": "1.0.0",
+  "description": "Modular Twitch bot for alpakamgee, deployed via Railway",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "tmi.js": "^1.8.5",
+    "ws": "^8.13.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["twitch", "bot", "websocket", "overlay"],
+  "author": "Kamgee",
+  "license": "MIT"
+}
