@@ -1,1 +1,35 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Overlay Chat</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: monospace;
+      margin: 0;
+      padding: 20px;
+    }
+    #chat {
+      border: 1px solid #444;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: #222;
+    }
+    #chat p {
+      margin: 5px 0;
+    }
+    #chat p.open { color: #4caf50; }
+    #chat p.msg { color: #03a9f4; }
+    #chat p.close { color: #f44336; }
+    #chat p.error { color: #ff9800; }
+  </style>
+</head>
+<body>
+  <h2>Overlay Chat</h2>
+  <div id="chat"></div>
+  <script type="module" src="./overlayMain.js"></script>
+</body>
+</html>
