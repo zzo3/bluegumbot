@@ -1,14 +1,8 @@
 // overlayMain.js
-// 自動偵測 Railway domain，若不存在則使用 localhost
-const domain = (typeof process !== 'undefined' && process.env?.RAILWAY_PUBLIC_DOMAIN)
-  ? process.env.RAILWAY_PUBLIC_DOMAIN
-  : 'localhost:8080';
-
-const WS_URL = domain.includes('localhost')
-  ? `ws://${domain}`
-  : `wss://${domain}`;
-
+const WS_URL = 'wss://bluegumbot-production.up.railway.app';
 const chatDiv = document.getElementById('chat');
+
+// 建立 WebSocket 連線
 const ws = new WebSocket(WS_URL);
 
 // 連線成功
