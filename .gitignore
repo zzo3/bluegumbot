@@ -1,0 +1,22 @@
+# Node.js modules
+node_modules/
+
+# dotenv 憑證
+.env
+
+# 系統檔案
+.DS_Store
+Thumbs.db
+
+# 編譯或部署產物（視情況加入）
+dist/
+build/
+*.log
+
+# IDE 設定檔（可選）
+.vscode/
+.idea/
+
+# Railway 或其他平台設定（視情況加入）
+.railway/
+.vercel/

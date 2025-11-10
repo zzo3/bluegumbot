@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  background: transparent;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+#overlayContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#messageBox {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  font-size: 2em;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+#effectLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}

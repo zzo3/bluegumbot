@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <title>控制面板</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="settingsPanel">
+
+    <!-- ☕ 咖啡館狀態 -->
+    <section id="cafeStatus">
+      <h2>☕ 咖啡館狀態</h2>
+      <p>目前遊戲：<span id="currentGame">載入中…</span></p>
+      <p>指令狀態：<span id="cafeCommandStatus">同步中…</span></p>
+      <label><input type="checkbox" id="enableCafeCommands" /> 手動啟用咖啡館指令</label>
+    </section>
+
+    <!-- 🔒 封鎖名單管理 -->
+    <section id="banListSettings">
+      <h2>🔒 封鎖名單管理</h2>
+      <label>新增封鎖使用者：<input type="text" id="banUserInput" /></label>
+      <button id="banUserBtn">加入封鎖</button>
+
+      <label>解除封鎖使用者：<input type="text" id="unbanUserInput" /></label>
+      <button id="unbanUserBtn">解除封鎖</button>
+
+      <ul id="bannedUserList"></ul>
+    </section>
+
+  </div>
+
+  <script>
+    const socket = new WebSocket("wss://your-websocket-server");
+    const bannedUsers = new Set(JSON.parse(localStorage.getItem("bannedUsers") || "[]"));
+
+    function updateBanListUI() {
+      const list = document.getElementById("bannedUserList");
+      list.innerHTML = "";
+      bannedUsers.forEach(user => {
+        const li = document.createElement("li");
+        li.textContent = user;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById("banUserBtn").onclick = () => {
+      const user = document.getElementById("banUserInput").value.trim();
+      if (user) {
+        bannedUsers.add(user);
+        localStorage.setItem("bannedUsers", JSON.stringify([...bannedUsers]));
+        updateBanListUI();
+        socket.send(JSON.stringify({ type: "banListUpdate", bannedUsers: [...bannedUsers] }));
+      }
+    };
+
+    document.getElementById("unbanUserBtn").onclick = () => {
+      const user = document.getElementById("unbanUserInput").value.trim();
+      if (user) {
+        bannedUsers.delete(user);
+        localStorage.setItem("bannedUsers", JSON.stringify([...bannedUsers]));
+        updateBanListUI();
+        socket.send(JSON.stringify({ type: "banListUpdate", bannedUsers: [...bannedUsers] }));
+      }
+    };
+
+    document.getElementById("enableCafeCommands").onchange = (e) => {
+      const enabled = e.target.checked;
+      socket.send(JSON.stringify({ type: "cafeToggle", enabled }));
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "gameStatus") {
+        document.getElementById("currentGame").textContent = data.game || "離線";
+        document.getElementById("cafeCommandStatus").textContent = data.cafeEnabled ? "✅ 已啟用" : "⛔ 已停用";
+        document.getElementById("enableCafeCommands").checked = data.cafeEnabled;
+      }
+    };
+
+    updateBanListUI();
+  </script>
+</body>
+</html>
