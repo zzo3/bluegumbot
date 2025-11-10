@@ -2,13 +2,14 @@
 
 export function handleAnnouncement(msg, ws, wss) {
   const { content, style } = msg;
+
   const payload = {
     type: 'announcement',
     content,
     style
   };
 
-  // 廣播給所有連線的 overlay
+  // 廣播給所有 overlay 客戶端
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(payload));
@@ -39,7 +40,7 @@ export function handleOverlaySettings(msg, ws, wss) {
     opacity
   };
 
-  // 廣播給所有 overlay
+  // 廣播給所有 overlay 客戶端
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(payload));

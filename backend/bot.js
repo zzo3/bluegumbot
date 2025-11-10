@@ -2,9 +2,15 @@
 
 import WebSocket, { WebSocketServer } from 'ws';
 import dotenv from 'dotenv';
-import { handleAnnouncement, handleAddCommand, handleOverlaySettings } from './handlers.js';
+import {
+  handleAnnouncement,
+  handleAddCommand,
+  handleOverlaySettings
+} from './handlers.js';
 
 dotenv.config();
+
+console.log('[Bot] Starting bot.js...'); // 啟動診斷
 
 const PORT = process.env.PORT || 3001;
 const wss = new WebSocketServer({ port: PORT });
