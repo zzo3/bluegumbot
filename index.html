@@ -3,23 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overlay 測試</title>
-  <style>
-    body {
-      background-color: #111;
-      color: #0f0;
-      font-family: monospace;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    h1 {
-      font-size: 2rem;
-    }
-  </style>
+  <title>Bluegum Overlay</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Overlay 測試成功 ✅</h1>
+  <div id="overlay">
+    <div id="chat-container"></div>
+    <div id="announcement"></div>
+  </div>
+
+  <!-- Overlay Modules -->
+  <script src="frontend/utils.js"></script>
+  <script src="frontend/websocketBridge.js"></script>
+  <script src="frontend/streamMonitor.js"></script>
+  <script src="frontend/announcer.js"></script>
 </body>
 </html>
