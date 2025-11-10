@@ -1,13 +1,31 @@
 const socket = new WebSocket("wss://bluegumbot-production.up.railway.app");
 
+socket.onopen = () => {
+  console.log("✅ WebSocket 已連線");
+};
+
 socket.onmessage = (event) => {
   const data = JSON.parse(event.data);
+
   if (data.type === "message") {
     showMessage(data.text);
   }
+
   if (data.type === "effect") {
     triggerEffect(data.name, data.user);
   }
+
+  if (data.type === "gameStatus") {
+    updateGameStatus(data.game, data.cafeEnabled);
+  }
+};
+
+socket.onerror = (err) => {
+  console.error("❌ WebSocket 錯誤：", err);
+};
+
+socket.onclose = () => {
+  console.warn("🔌 WebSocket 已關閉");
 };
 
 function showMessage(text) {
@@ -27,3 +45,7 @@ function triggerEffect(name, user) {
   setTimeout(() => layer.removeChild(effect), 4000);
 }
 
+function updateGameStatus(game, cafeEnabled) {
+  const status = document.getElementById("gameStatus");
+  status.textContent = `目前遊戲：${game}（Cafe 模式：${cafeEnabled ? "開啟" : "關閉"}）`;
+}
