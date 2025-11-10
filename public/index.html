@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bluegum Overlay</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       margin: 0;
       background: transparent;
       font-family: sans-serif;
       color: white;
+      overflow: hidden;
     }
+
     #messageBox {
       position: absolute;
       top: 10%;
@@ -20,6 +21,7 @@
       font-size: 2rem;
       animation: fadeInOut 5s ease-in-out;
     }
+
     #effectLayer {
       position: absolute;
       bottom: 10%;
@@ -27,6 +29,7 @@
       text-align: center;
       font-size: 1.5rem;
     }
+
     #gameStatus {
       position: absolute;
       top: 2%;
@@ -34,6 +37,7 @@
       font-size: 1rem;
       opacity: 0.7;
     }
+
     @keyframes fadeInOut {
       0% { opacity: 0; }
       10% { opacity: 1; }
@@ -47,6 +51,58 @@
   <div id="messageBox"></div>
   <div id="effectLayer"></div>
 
-  <script src="websocketBridge.js"></script>
+  <script>
+    const socket = new WebSocket("wss://bluegumbot-production.up.railway.app");
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket 已連線");
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "message") {
+        showMessage(data.text);
+      }
+
+      if (data.type === "effect") {
+        triggerEffect(data.name, data.user);
+      }
+
+      if (data.type === "gameStatus") {
+        updateGameStatus(data.game, data.cafeEnabled);
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("❌ WebSocket 錯誤：", err);
+    };
+
+    socket.onclose = () => {
+      console.warn("🔌 WebSocket 已關閉");
+    };
+
+    function showMessage(text) {
+      const box = document.getElementById("messageBox");
+      box.textContent = text;
+      box.style.animation = "none";
+      void box.offsetWidth;
+      box.style.animation = "fadeInOut 5s ease-in-out";
+    }
+
+    function triggerEffect(name, user) {
+      const layer = document.getElementById("effectLayer");
+      const effect = document.createElement("div");
+      effect.className = `effect-${name}`;
+      effect.textContent = `${user} 觸發了 ${name} 特效！`;
+      layer.appendChild(effect);
+      setTimeout(() => layer.removeChild(effect), 4000);
+    }
+
+    function updateGameStatus(game, cafeEnabled) {
+      const status = document.getElementById("gameStatus");
+      status.textContent = `目前遊戲：${game}（Cafe 模式：${cafeEnabled ? "開啟" : "關閉"}）`;
+    }
+  </script>
 </body>
 </html>
