@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Multi-platform streaming bot for Twitch and Kick",
   "main": "backend/server.js",
+  "type": "module",
   "scripts": {
     "start": "node backend/server.js",
     "bot": "node backend/bot.js",
