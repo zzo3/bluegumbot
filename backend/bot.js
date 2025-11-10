@@ -1,77 +1,43 @@
-import WebSocket from "ws";
-import dotenv from "dotenv";
-import { fetchCurrentGame } from "./twitch/twitchGameMonitor.js";
-import { handleCommand } from "./public/chatCommands.js";
-import { handleGameCommand } from "./public/gameCommands.js";
+// backend/bot.js
+
+import WebSocket, { WebSocketServer } from 'ws';
+import dotenv from 'dotenv';
+import { handleAnnouncement, handleAddCommand, handleOverlaySettings } from './handlers.js';
 
 dotenv.config();
 
-const port = process.env.PORT || 8080;
-const wsServer = new WebSocket.Server({ port });
+const PORT = process.env.PORT || 3001;
+const wss = new WebSocketServer({ port: PORT });
 
-let cafeEnabled = true;
-const bannedUsers = new Set();
-const clients = new Set();
+console.log(`[Bot] WebSocket server running on port ${PORT}`);
 
-wsServer.on("connection", (socket) => {
-  clients.add(socket);
+wss.on('connection', (ws) => {
+  console.log('[Bot] Client connected');
 
-  socket.on("message", (msg) => {
+  ws.on('message', (data) => {
     try {
-      const data = JSON.parse(msg);
+      const msg = JSON.parse(data);
+      console.log('[Bot] Received:', msg);
 
-      if (data.type === "banListUpdate") {
-        bannedUsers.clear();
-        data.bannedUsers.forEach(u => bannedUsers.add(u));
-      }
-
-      if (data.type === "cafeToggle") {
-        cafeEnabled = data.enabled;
+      switch (msg.type) {
+        case 'announcement':
+          handleAnnouncement(msg, ws, wss);
+          break;
+        case 'addCommand':
+          handleAddCommand(msg, ws);
+          break;
+        case 'overlaySettings':
+          handleOverlaySettings(msg, ws, wss);
+          break;
+        default:
+          console.warn('[Bot] Unknown message type:', msg.type);
       }
     } catch (err) {
-      console.error("接收到無效訊息：", err.message);
+      console.error('[Bot] Failed to parse message:', err);
     }
   });
 
-  socket.on("close", () => {
-    clients.delete(socket);
+  ws.on('close', () => {
+    console.log('[Bot] Client disconnected');
   });
 });
-
-function broadcast(data) {
-  const msg = JSON.stringify(data);
-  clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(msg);
-    }
-  });
-}
-
-// 每 60 秒查詢 Twitch 遊戲名稱
-setInterval(async () => {
-  try {
-    const game = await fetchCurrentGame();
-    cafeEnabled = game === "Not Monday Cafe";
-    broadcast({ type: "gameStatus", game, cafeEnabled });
-  } catch (err) {
-    console.error("Twitch API 錯誤：", err.message);
-  }
-}, 60000);
-
-// 模擬聊天室訊息處理（可接 Twitch IRC 或其他平台）
-function onChat(user, message) {
-  if (bannedUsers.has(user)) return;
-
-  handleCommand(user, message, sendMessage, {
-    enableEffects: true,
-    maxConcurrentEffects: 3
-  });
-
-  handleGameCommand(user, message, sendMessage, cafeEnabled);
-}
-
-function sendMessage(text) {
-  broadcast({ type: "message", text });
-}
-
-console.log(`✅ WebSocket server 已啟動於 port ${port}`);
