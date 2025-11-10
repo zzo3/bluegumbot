@@ -1,6 +1,6 @@
 // backend/bot.js
 
-import WebSocket, { WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import dotenv from 'dotenv';
 import {
   handleAnnouncement,
